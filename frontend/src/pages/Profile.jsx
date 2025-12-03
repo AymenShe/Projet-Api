@@ -2,6 +2,22 @@ import { useAuth } from "../hooks/useAuth.js";
 import { useEffect, useState } from "react";
 import api from "../services/api.js";
 
+function OrderItem({ item }) {
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    api.get(`/products/${item.product_id}`).then((res) => setProduct(res.data));
+  }, [item.product_id]);
+
+  if (!product) return <div>Chargement...</div>;
+
+  return (
+    <div style={{ marginLeft: 10, fontSize: "0.9em", color: "var(--muted)" }}>
+      {product.name} x {item.quantity} - {(item.price * item.quantity).toFixed(2)} â‚¬
+    </div>
+  );
+}
+
 export default function Profile() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
@@ -25,7 +41,10 @@ export default function Profile() {
         <h3>Historique commandes</h3>
         {orders.map((o) => (
           <div key={o.id} style={{ borderBottom: "1px solid var(--border)", paddingBottom: 8, marginBottom: 8 }}>
-            <strong>#{o.id}</strong> — {o.status} — € {Number(o.total).toFixed(2)}
+            <strong>#{o.id}</strong> - {o.status} - Total: {Number(o.items.reduce((a, i) => a + i.price * i.quantity, 0)).toFixed(2)} â‚¬
+            {o.items.map((i) => (
+              <OrderItem key={i.id} item={i} />
+            ))}
           </div>
         ))}
       </div>

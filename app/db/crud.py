@@ -8,6 +8,7 @@ from app.models.review import ReviewCreate, ReviewUpdate
 from app.models.delivery import DeliveryCreate, DeliveryUpdate
 from app.models.store import StoreCreate, StoreUpdate
 from passlib.context import CryptContext
+from datetime import datetime, timedelta
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
@@ -16,6 +17,15 @@ def get_password_hash(password):
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
+
+def authenticate_user(db: Session, email: str, password: str):
+    """Authenticate user by email and password"""
+    user = get_user_by_email(db, email)
+    if not user:
+        return None
+    if not verify_password(password, user.hashed_password):
+        return None
+    return user
 
 # User CRUD
 def get_user(db: Session, user_id: int):
@@ -69,11 +79,17 @@ def get_orders_by_user(db: Session, user_id: int):
     return db.query(Order).filter(Order.user_id == user_id).all()
 
 def create_order(db: Session, order: OrderCreate, user_id: int):
-    db_order = Order(user_id=user_id, status="pending")
+    # Create order
+    db_order = Order(
+        user_id=user_id, 
+        status="paid", # Automatically paid since we simulate payment
+        total_price=0.0
+    )
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
     
+    # Process items
     total_price = 0.0
     for item in order.items:
         product = db.query(Product).filter(Product.id == item.product_id).first()
@@ -90,12 +106,34 @@ def create_order(db: Session, order: OrderCreate, user_id: int):
             # Update stock
             product.quantity -= item.quantity
         else:
-            # Rollback if stock insufficient (simplified logic)
+            # Rollback if stock insufficient
             db.delete(db_order)
             db.commit()
             raise ValueError(f"Insufficient stock for product {item.product_id}")
             
     db_order.total_price = total_price
+    
+    # Simulate Payment
+    db_payment = Payment(
+        order_id=db_order.id,
+        amount=total_price,
+        status="completed",
+        transaction_id=f"sim_{datetime.utcnow().timestamp()}"
+    )
+    db.add(db_payment)
+    
+    # Handle Delivery (if needed, we can store it or just acknowledge it)
+    if order.delivery_type == "shipping":
+        db_delivery = Delivery(
+            order_id=db_order.id,
+            status="pending",
+            estimated_delivery=datetime.utcnow() + timedelta(days=3)
+        )
+        db.add(db_delivery)
+    elif order.delivery_type == "pickup":
+        # Logic for pickup could go here
+        pass
+        
     db.commit()
     db.refresh(db_order)
     return db_order

@@ -2,7 +2,7 @@ export default function Contact() {
   return (
     <div className="card" style={{ padding: 18, maxWidth: 720, margin: "0 auto" }}>
       <h2>Contact</h2>
-      <p style={{ color: "var(--muted)" }}>Besoin d'aide ? Écrivez-nous.</p>
+      <p style={{ color: "var(--muted)" }}>Besoin d'aide ? Ã©crivez-nous.</p>
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
         <input placeholder="Nom" />
         <input placeholder="Email" />

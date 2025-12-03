@@ -16,3 +16,6 @@ def update_user_service(db: Session, user_id: int, user_update: UserUpdate):
 
 def delete_user_service(db: Session, user_id: int):
     return crud.delete_user(db, user_id)
+
+def authenticate_user_service(db: Session, email: str, password: str):
+    return crud.authenticate_user(db, email, password)

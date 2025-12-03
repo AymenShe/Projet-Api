@@ -5,7 +5,7 @@ export default function OrderConfirmation() {
   return (
     <div className="card" style={{ padding: 18, textAlign: "center" }}>
       <h2>Merci !</h2>
-      <p>Commande #{id} enregistrée.</p>
+      <p>Commande #{id} enregistrÃ©e.</p>
       <Link to="/track" className="button">Suivre ma commande</Link>
     </div>
   );

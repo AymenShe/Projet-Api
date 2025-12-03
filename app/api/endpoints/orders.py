@@ -7,14 +7,15 @@ from app.services.order_service import (
     update_order_status_service,
 )
 from app.db.base import get_db
+from app.core.auth import get_current_user
+from app.models.user import UserOut
 
 router = APIRouter()
 
 @router.post("/", response_model=OrderOut)
-def create_order(order: OrderCreate, user_id: int, db: Session = Depends(get_db)):
-    # In a real app, user_id would come from the authenticated user
+def create_order(order: OrderCreate, current_user: UserOut = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
-        return create_new_order(db, order, user_id)
+        return create_new_order(db, order, current_user.id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

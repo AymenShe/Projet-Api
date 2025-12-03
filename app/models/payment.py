@@ -5,6 +5,12 @@ class PaymentBase(BaseModel):
     amount: float
     status: str = "pending"
 
+class PaymentDetails(BaseModel):
+    cardNumber: str
+    name: str
+    exp: str
+    cvc: str
+
 class PaymentCreate(PaymentBase):
     order_id: int
     transaction_id: str | None = None

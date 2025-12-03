@@ -44,7 +44,7 @@ export default function Checkout() {
       payment: { cardNumber: payment.cardNumber, name: payment.name, exp: payment.exp, cvc: payment.cvc }
     };
     try {
-      const { data } = await api.post("/orders", payload);
+      const { data } = await api.post(`/orders/?user_id=${user.id}`, payload);
       navigate(`/confirmation/${data.id}`);
     } catch (e) {
       setPayError("Paiement refusé ou connexion perdue.");

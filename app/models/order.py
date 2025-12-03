@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List
+from typing import List, Dict, Any
+from app.models.payment import PaymentDetails
 
 class OrderItemBase(BaseModel):
     product_id: int
@@ -18,6 +19,9 @@ class OrderBase(BaseModel):
 
 class OrderCreate(OrderBase):
     items: List[OrderItemBase]
+    delivery_type: str
+    pickup_point: Dict[str, Any] | None = None
+    payment: PaymentDetails
 
 class OrderUpdate(BaseModel):
     status: str | None = None

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.models.user import UserCreate, UserUpdate, UserOut
+from app.models.user import UserCreate, UserUpdate, UserOut, UserLogin, LoginResponse
 from app.models.order import OrderOut
 from app.services.user_service import (
     create_new_user,
@@ -8,8 +8,10 @@ from app.services.user_service import (
     get_user_by_email_service,
     update_user_service,
     delete_user_service,
+    authenticate_user_service,
 )
 from app.services.order_service import get_user_orders
+from app.core.auth import create_access_token, get_current_user
 from app.db.base import get_db
 
 router = APIRouter()
@@ -20,6 +22,20 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return create_new_user(db, user)
+
+@router.post("/login", response_model=LoginResponse)
+def login(credentials: UserLogin, db: Session = Depends(get_db)):
+    """Authenticate user and return JWT token"""
+    user = authenticate_user_service(db, credentials.email, credentials.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    token = create_access_token(user.id, user.email)
+    return LoginResponse(token=token, user=user)
+
+@router.get("/me/orders", response_model=list[OrderOut])
+def read_current_user_orders(current_user: UserOut = Depends(get_current_user), db: Session = Depends(get_db)):
+    return get_user_orders(db, current_user.id)
 
 @router.get("/{user_id}", response_model=UserOut)
 def read_user(user_id: int, db: Session = Depends(get_db)):

@@ -7,7 +7,7 @@ export default function Register() {
   const navigate = useNavigate();
 
   const submit = async () => {
-    await api.post("/users/register", form);
+    await api.post("/users/", form);
     navigate("/login");
   };
 
