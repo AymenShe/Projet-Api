@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.db import crud
-from app.models.order import Order
-from app.models.product import Product
+from app.db.models import Order
+from app.db.models import Product
 from collections import Counter
 
 def get_recommendations(db: Session, user_id: int, lat: float = None, lon: float = None):

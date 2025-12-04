@@ -1,12 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi.middleware import SlowAPIMiddleware
 from app.api.endpoints import products, users, orders, payments, reviews, recommendations, deliveries, stores
 from app.db.base import engine, Base
+from app.core.rate_limit import limiter
 
 # Create tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+app.state.limiter = limiter
+app.add_middleware(SlowAPIMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
