@@ -35,16 +35,18 @@ Le projet utilise un `Makefile` pour simplifier les tâches courantes.
 ## ▶️ Démarrage
 
 Pour lancer le backend complet (Base de données et Backend) :
-Pour lancer le frontend complet (Frontend) :
 ```bash
 make start
+```
+Pour lancer le frontend complet (Frontend) :
+```bash
 make start-frontend
 ```
 
 - **Backend API** : Accessible sur [http://localhost:8000](http://localhost:8000)
 - **Documentation API (Swagger)** : [http://localhost:8000/docs](http://localhost:8000/docs)
+- **GraphQL** : Accessible sur [http://localhost:8000/graphql](http://localhost:8000/graphql)
 - **Frontend** : Accessible sur [http://localhost:5173](http://localhost:5173)
-
 ## 🧪 Tests et Qualité du Code
 
 - **Lancer les tests unitaires et d'intégration** :
