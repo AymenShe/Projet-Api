@@ -2,6 +2,10 @@
 
 Ce projet est une application complète de commerce électronique, construite avec une architecture moderne séparant le backend et le frontend.
 
+## Auteur
+Aymen ALLOUNE
+Amir BEN HASSEN
+
 ## 🚀 Technologies Utilisées
 
 - **Backend**: FastAPI (Python), SQLAlchemy, Pydantic
