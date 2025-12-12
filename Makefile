@@ -1,5 +1,8 @@
 .PHONY: start test
 
+install:
+	pip install -r requirements.txt
+
 start:
 	rm -f projet.db
 	python3 init_db.py

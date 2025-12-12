@@ -82,7 +82,7 @@ def create_order(db: Session, order: OrderCreate, user_id: int):
     # Create order
     db_order = Order(
         user_id=user_id, 
-        status="paid", # Automatically paid since we simulate payment
+        status="pending", 
         total_price=0.0
     )
     db.add(db_order)
@@ -112,15 +112,16 @@ def create_order(db: Session, order: OrderCreate, user_id: int):
             raise ValueError(f"Insufficient stock for product {item.product_id}")
             
     db_order.total_price = total_price
+    db.commit() # Commit order and items before payment
     
-    # Simulate Payment
-    db_payment = Payment(
-        order_id=db_order.id,
+    # Process Payment using Service
+    from app.services import payment_service
+    payment_create = PaymentCreate(
         amount=total_price,
-        status="completed",
-        transaction_id=f"sim_{datetime.utcnow().timestamp()}"
+        order_id=db_order.id
     )
-    db.add(db_payment)
+    # process_payment calls create_payment which updates order status to 'paid' if successful
+    payment_service.process_payment(db, payment_create, order.payment)
     
     # Handle Delivery (if needed, we can store it or just acknowledge it)
     if order.delivery_type == "shipping":
@@ -130,11 +131,11 @@ def create_order(db: Session, order: OrderCreate, user_id: int):
             estimated_delivery=datetime.utcnow() + timedelta(days=3)
         )
         db.add(db_delivery)
+        db.commit()
     elif order.delivery_type == "pickup":
         # Logic for pickup could go here
         pass
         
-    db.commit()
     db.refresh(db_order)
     return db_order
 
@@ -176,6 +177,9 @@ def create_review(db: Session, review: ReviewCreate, user_id: int):
 # Delivery CRUD
 def get_delivery(db: Session, delivery_id: int):
     return db.query(Delivery).filter(Delivery.id == delivery_id).first()
+
+def get_delivery_by_order_id(db: Session, order_id: int):
+    return db.query(Delivery).filter(Delivery.order_id == order_id).first()
 
 def create_delivery(db: Session, delivery: DeliveryCreate):
     db_delivery = Delivery(**delivery.model_dump())

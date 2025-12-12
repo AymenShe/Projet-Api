@@ -19,8 +19,8 @@ export default function Navbar() {
         <strong>Motommerce</strong>
       </Link>
       <nav style={{ display: "flex", gap: 16, alignItems: "center" }}>
-        <Link to="/">Home</Link>
-        <Link to="/shop">Shop</Link>
+        <Link to="/">Accueil</Link>
+        <Link to="/shop">Catalogue</Link>
         <Link to="/stores">Magasins</Link>
         <Link to="/contact">Contact</Link>
         <Link to="/cart" style={{ position: "relative", padding: "6px 10px", borderRadius: 10, background: "#0f0f18", border: "1px solid var(--border)" }}>

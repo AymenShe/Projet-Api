@@ -15,6 +15,16 @@ def read_delivery(delivery_id: int, db: Session = Depends(get_db)):
     db_delivery = get_delivery_status(db, delivery_id)
     if not db_delivery:
         raise HTTPException(status_code=404, detail="Delivery not found")
+    if not db_delivery:
+        raise HTTPException(status_code=404, detail="Delivery not found")
+    return db_delivery
+
+@router.get("/order/{order_id}", response_model=DeliveryOut)
+def read_delivery_by_order(order_id: int, db: Session = Depends(get_db)):
+    from app.db import crud
+    db_delivery = crud.get_delivery_by_order_id(db, order_id)
+    if not db_delivery:
+        raise HTTPException(status_code=404, detail="Delivery not found for this order")
     return db_delivery
 
 @router.put("/{delivery_id}", response_model=DeliveryOut)

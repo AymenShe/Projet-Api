@@ -1,9 +1,11 @@
 ﻿import { useContext } from "react";
 import { CartContext } from "../context/CartContext.jsx";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.js";
 
 export default function Cart() {
   const { items, remove, updateQty, total } = useContext(CartContext);
+  const { user } = useAuth();
   return (
     <div className="card" style={{ padding: 16 }}>
       <h2>Panier</h2>
@@ -22,7 +24,15 @@ export default function Cart() {
         <strong>Total</strong>
         <strong>{"\u20ac " + total.toFixed(2)}</strong>
       </div>
-      <Link to="/checkout" className="button" style={{ marginTop: 12, display: "inline-block", textAlign: "center" }}>Passer au paiement</Link>
+
+      {user ? (
+        <Link to="/checkout" className="button" style={{ marginTop: 12, display: "inline-block", textAlign: "center" }}>Passer au paiement</Link>
+      ) : (
+        <div style={{ marginTop: 20, padding: 16, background: "rgba(255, 100, 100, 0.1)", borderRadius: 8, textAlign: "center" }}>
+          <p style={{ marginBottom: 10, color: "var(--text)" }}>Vous devez vous connecter avant de passer au paiement</p>
+          <Link to="/login" className="button" style={{ display: "inline-block" }}>Se connecter</Link>
+        </div>
+      )}
     </div>
   );
 }

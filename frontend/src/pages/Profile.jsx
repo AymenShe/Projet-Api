@@ -21,6 +21,18 @@ function OrderItem({ item }) {
 export default function Profile() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
+  const [orderId, setOrderId] = useState("");
+  const [delivery, setDelivery] = useState(null);
+
+  const search = async () => {
+    try {
+      const { data } = await api.get(`/deliveries/order/${orderId}`);
+      setDelivery(data);
+    } catch (e) {
+      setDelivery(null);
+      alert("Livraison introuvable pour cette commande.");
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -41,13 +53,34 @@ export default function Profile() {
         <h3>Historique commandes</h3>
         {orders.map((o) => (
           <div key={o.id} style={{ borderBottom: "1px solid var(--border)", paddingBottom: 8, marginBottom: 8 }}>
-            <strong>#{o.id}</strong> - {o.status} - Total: {Number(o.items.reduce((a, i) => a + i.price * i.quantity, 0)).toFixed(2)} €
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <strong>#{o.id}</strong>
+              <span>{o.status}</span>
+            </div>
+            {o.delivery && (
+              <div style={{ fontSize: "0.9em", color: "var(--accent)" }}>
+                Livraison: {o.delivery.status} (Estimée: {new Date(o.delivery.estimated_delivery).toLocaleDateString()})
+              </div>
+            )}
+            <div>Total: {Number(o.items.reduce((a, i) => a + i.price * i.quantity, 0)).toFixed(2)} €</div>
             {o.items.map((i) => (
               <OrderItem key={i.id} item={i} />
             ))}
           </div>
         ))}
       </div>
+
+      <h2>Suivi de commande</h2>
+      <input placeholder="ID commande" value={orderId} onChange={(e) => setOrderId(e.target.value)} />
+      <button className="button" style={{ marginTop: 10 }} onClick={search}>Rechercher</button>
+      {delivery && (
+        <div style={{ marginTop: 12 }}>
+          <p>Status: {delivery.status}</p>
+          <ul>
+            {JSON.parse(delivery.history || "[]").map((h, idx) => <li key={idx}>{h.status} - {h.at}</li>)}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

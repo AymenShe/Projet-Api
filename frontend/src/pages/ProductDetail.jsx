@@ -2,6 +2,7 @@
 import { useFetch } from "../hooks/useFetch.js";
 import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext.jsx";
+import { useToast } from "../context/ToastContext.jsx";
 import RatingStars from "../components/RatingStars.jsx";
 
 
@@ -9,8 +10,15 @@ export default function ProductDetail() {
   const { id } = useParams();
   const { data: product, loading } = useFetch(`/products/${id}`);
   const { add } = useContext(CartContext);
+  const { showToast } = useToast();
   const fallback = "/images/pas_image.png";
   const imgSrc = product?.image_url;
+
+  const handleAdd = () => {
+    add(product, 1);
+    showToast(`${product.name} ajouté au panier !`);
+  };
+
   if (loading) return <p>Chargement...</p>;
   if (!product) {
     return (
@@ -50,7 +58,7 @@ export default function ProductDetail() {
           <RatingStars rating={product.rating} />
           <p>Stock: {product.stock}</p>
           <h3>{"\u20ac " + Number(product.price).toFixed(2)}</h3>
-          <button className="button" onClick={() => add(product, 1)}>Ajouter au panier</button>
+          <button className="button" onClick={handleAdd}>Ajouter au panier</button>
         </div>
       </div>
       <section className="card" style={{ padding: 14 }}>

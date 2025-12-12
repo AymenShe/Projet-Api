@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Dict, Any
 from app.models.payment import PaymentDetails
+from app.models.delivery import DeliveryOut
 
 class OrderItemBase(BaseModel):
     product_id: int
@@ -33,6 +34,7 @@ class OrderOut(OrderBase):
     total_price: float
     created_at: datetime
     items: List[OrderItemOut]
+    delivery: DeliveryOut | None = None
 
     class Config:
         from_attributes = True

@@ -29,6 +29,11 @@ app.include_router(recommendations.router, prefix="/recommendations", tags=["rec
 app.include_router(deliveries.router, prefix="/deliveries", tags=["deliveries"])
 app.include_router(stores.router, prefix="/stores", tags=["stores"])
 
+from strawberry.fastapi import GraphQLRouter
+from app.graphql.schema import schema
+graphql_app = GraphQLRouter(schema)
+app.include_router(graphql_app, prefix="/graphql")
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the API"}

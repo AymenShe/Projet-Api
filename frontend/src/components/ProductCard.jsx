@@ -2,11 +2,18 @@
 import RatingStars from "./RatingStars.jsx";
 import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext.jsx";
+import { useToast } from "../context/ToastContext.jsx";
 
 export default function ProductCard({ product }) {
   const { add } = useContext(CartContext);
-  const fallback = "/images/pas_image.png"; // Generic fallback
+  const { showToast } = useToast();
+  const fallback = "/images/pas_image.png";
   const [imgSrc, setImgSrc] = useState(product.image_url || fallback);
+
+  const handleAdd = () => {
+    add(product, 1);
+    showToast(`${product.name} ajouté au panier !`);
+  };
 
   return (
     <article className="card" style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -22,7 +29,7 @@ export default function ProductCard({ product }) {
       <strong>{"\u20ac " + Number(product.price).toFixed(2)}</strong>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Link to={`/product/${product.id}`} style={{ color: "var(--accent)" }}>Voir</Link>
-        <button className="button" onClick={() => add(product, 1)}>Ajouter au panier</button>
+        <button className="button" onClick={handleAdd}>Ajouter au panier</button>
       </div>
     </article>
   );

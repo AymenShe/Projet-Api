@@ -11,3 +11,6 @@ pyjwt
 slowapi
 pytest
 httpx
+stripe
+pydantic-settings
+strawberry-graphql[fastapi]
